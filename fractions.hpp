@@ -5,23 +5,13 @@ using namespace std;
 
 class fraction {
 	private:
-		int n, d;
+		signed int n = 0;
+		signed int d = 0;
 		int gcd (int a, int b) const {
-			if (a == 0) {
-				return b;
-			}
 			if (b == 0) {
 				return a;
 			}
-			if (a == b) {
-				return a;
-			}
-
-			if (a > b) {
-				return gcd(a-b, b);
-			}
-
-			return gcd(a, b-a);
+			return gcd(b, a % b);
 		}
 		int get_precision(double a) {
 			string s = to_string(a);
@@ -73,6 +63,12 @@ class fraction {
 		bool sign() const {
 			return (n >= 0);
 		}
+		int get_n() const{
+			return n;
+		}
+		int get_d() const{
+			return d;
+		}
 		// Operators
 		fraction operator+(const fraction &that) const {
 			int numerator = this->n * that.d + that.n * this->d;
@@ -93,8 +89,9 @@ class fraction {
 			return q;
 		}
 		fraction operator*(const int i) const {
-			fraction a(i);
-			fraction q(*this * a);
+			int numerator = this->n * i;
+			int denominator = this->d;
+			fraction q(numerator, denominator);
 			return q;
 		}
 		fraction operator/(const fraction &that) const {
@@ -114,7 +111,7 @@ class fraction {
 		}
 		void operator=(const fraction &q ) {
 			n = q.n;
-			d = q.n;
+			d = q.d;
 		}
 		void operator=(const int i ) {
 			n = i;
