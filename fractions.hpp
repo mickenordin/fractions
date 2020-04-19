@@ -5,9 +5,9 @@ using namespace std;
 
 class fraction {
 	private:
-		signed int n = 0;
-		signed int d = 0;
-		int gcd (int a, int b) const {
+		signed long long n = 0;
+		signed long long d = 1;
+		signed long long gcd (signed long long a, signed long long b) const {
 			if (b == 0) {
 				return a;
 			}
@@ -15,13 +15,18 @@ class fraction {
 		}
 		int get_precision(double a) {
 			string s = to_string(a);
-			bool dec = false;
+			int i = s.length() - 1;
+			while (s[i] == '0'){
+				i--;
+			}
+			s.erase(i+1,s.length());
+			bool point = false;
 			int count = 0;
 			for(int i = 0; i < s.length(); i++) {
 				if(s[i] == '.') {
-					dec = true;
+					point = true;
 				} else {
-					if(dec) {
+					if(point) {
 						count++;
 					}
 				}
@@ -31,66 +36,77 @@ class fraction {
 	public:
 		// Constructors
 		fraction() {
-			n = 0;
-			d = 1;
-		}
-		fraction(int a, int b) {
-			int hcf = gcd(a,b);
-			n = a / hcf;
-			d = b / hcf;
-		}
-		fraction(int a) {
-			n = a;
-			d = 1;
-		}
-		fraction(double dec) {
-			int precision = get_precision(dec);
-			int denominator = 1;
-			for(int i = 0; i < precision; i++) {
-				denominator *= 10;
-			}
-			int numerator = dec * denominator;
-			int hcf = gcd(numerator,denominator);
-			n = numerator / hcf;
-			d = denominator / hcf;
 		}
 		fraction(const fraction &q) {
-			int hcf = gcd(q.n,q.d);
+			signed long long hcf = gcd(q.n,q.d);
 			n = q.n / hcf;
 			d = q.d / hcf;
 		}
-		// Member functions
-		bool sign() const {
-			return (n >= 0);
+		fraction(signed long long a, signed long long b) {
+			signed long long hcf = gcd(a,b);
+			n =  a / hcf;
+			d =  b / hcf;
 		}
-		int get_n() const{
+		fraction(int a, int b) {
+			signed long long hcf = gcd(a,b);
+			n = (signed long long) a  / hcf;
+			d = (signed long long) b / hcf;
+		}
+		fraction(int a) {
+			fraction q(a, 1);
+			n = q.n;
+			d = q.d;
+		}
+		fraction(double dec) {
+			if(dec < 0) {
+				dec = dec * (double) -1;
+			}
+			int precision = get_precision(dec);
+			signed long long denominator = 1;
+			for(int i = 0; i < precision; i++) {
+				denominator *= 10;
+			}
+			signed long long numerator = dec * denominator;
+			fraction q(numerator, denominator);
+			n = q.n;
+			d = q.d;
+		}
+		// Member functions
+		int get_sign() const {
+			return (!(n >= 0) != !(d >=0)) ? -1 : 1;
+		}
+		signed long long get_n() const {
 			return n;
 		}
-		int get_d() const{
+		signed long long get_d() const {
 			return d;
+		}
+		double to_double() const {
+			double dec = (double) n / (double) d ;
+			return dec;
 		}
 		// Operators
 		fraction operator+(const fraction &that) const {
-			int numerator = this->n * that.d + that.n * this->d;
-			int denominator = this->d * that.d;
+			signed long long numerator = this->n * that.d + that.n * this->d;
+			signed long long denominator = this->d * that.d;
 			fraction q(numerator, denominator);
 			return q;
 		}
 		fraction operator-(const fraction &that) const {
-			int numerator = this->n * that.d - that.n * this->d;
-			int denominator = this->d * that.d;
+			signed long long numerator = this->n * that.d - that.n * this->d;
+			signed long long denominator = this->d * that.d;
 			fraction q(numerator, denominator);
 			return q;
 		}
 		fraction operator*(const fraction &that) const {
-			int numerator = this->n * that.n;
-			int denominator = this->d * that.d;
+			signed long long numerator = this->n * that.n;
+			signed long long denominator = this->d * that.d;
 			fraction q(numerator, denominator);
 			return q;
 		}
 		fraction operator*(const int i) const {
-			int numerator = this->n * i;
-			int denominator = this->d;
+			signed long long numerator = this->n * i;
+			signed long long denominator = this->d;
 			fraction q(numerator, denominator);
 			return q;
 		}
@@ -105,7 +121,7 @@ class fraction {
 			} else if(q.d == 1) {
 				os << q.n;
 			} else {
-				os << q.n << '/' << q.d;
+				os << '(' << q.n << '/' << q.d << ')';
 			}
 			return os;
 		}
@@ -114,15 +130,16 @@ class fraction {
 			d = q.d;
 		}
 		void operator=(const int i ) {
-			n = i;
-			d = 1;
+			n = (signed long long) i;
+			d = (signed long long) 1;
 		}
 		void operator=(const double dec ) {
 			const fraction q(dec);
-			*this = q;
+			n = q.n;
+			d = q.d;
 		}
 		bool operator>(const fraction &q ) const {
-			int hcf = gcd(d,q.d);
+			signed long long hcf = gcd(d,q.d);
 			fraction a(*this * hcf);
 			fraction b(q * hcf);
 			return (a.n > b.n);
@@ -132,23 +149,25 @@ class fraction {
 			return (*this > q);
 		}
 		bool operator==(const fraction &q ) const {
-			return ((n == q.n) && (d == q.d));
+			return ((n == q.n) && (d == q.d) );
 		}
 		bool operator==(const int i) const {
-			return ((n == i) && (d == 1));
+			fraction q(i);
+			return (*this == q);
 		}
 		bool operator==(const double dec) const {
-			fraction a(dec);
-			return ((n == a.n) && (d == a.d));
+			fraction q(dec);
+			return (*this == q);
 		}
 		bool operator!=(const fraction &q ) const {
-			return ((n != q.n) || (d != q.d));
+			return ( (n != q.n) || (d != q.d) );
 		}
 		bool operator!=(const int i) const {
-			return ((n != i) || (d != 1));
+			fraction q(i);
+			return (*this != q);
 		}
 		bool operator!=(const double dec) const {
-			fraction a(dec);
-			return ((n != a.n) || (d != a.d));
+			fraction q(dec);
+			return (*this != q);
 		}
 };
