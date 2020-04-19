@@ -58,9 +58,6 @@ class fraction {
 			d = q.d;
 		}
 		fraction(double dec) {
-			if(dec < 0) {
-				dec = dec * (double) -1;
-			}
 			int precision = get_precision(dec);
 			signed long long denominator = 1;
 			for(int i = 0; i < precision; i++) {
@@ -116,12 +113,26 @@ class fraction {
 			return a * b;
 		}
 		friend ostream &operator<<( ostream &os, const fraction &q ) { 
+			signed long long num = q.n;
+			signed long long den = q.d;
+			string s = "";
+			if(q.n < 0) {
+				s = "-";
+				num = num * -1;
+			}
+			if(q.d < 0) {
+				s = "-";
+				den = den * -1;
+			}
+			if(q.get_sign() == 1) {
+				string s = "";
+			}
 			if( q.d == q.n) {
-				os << 1;
+				os << s << 1;
 			} else if(q.d == 1) {
-				os << q.n;
+				os << s << num;
 			} else {
-				os << '(' << q.n << '/' << q.d << ')';
+				os << s << '(' << num << '/' << den << ')';
 			}
 			return os;
 		}
