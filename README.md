@@ -1,25 +1,3 @@
-**Compile and run**
-```bash
-git clone https://github.com/mickenordin/fractions.git
-cd fractions
-g++ -o fractions fractions.cpp
-./fractions
-```
-
-**Output**
-
-```
-7/3=(7/3)
-7/3=2.333333333
-1/11=(1/11)
-1/11=0.09090909091
-(7/3)+(1/11)=(80/33)
-(7/3)+(1/11)=2.424242424
-(7/3)-(1/11)=(74/33)
-(7/3)-(1/11)=2.242424242
-(7/3)*(1/11)=(7/33)
-(7/3)*(1/11)=0.2121212121
-(7/3)/(1/11)=(77/3)
-(7/3)/(1/11)=25.66666667
-0.75=(3/4)
-```
+# Repo moved
+This repo has now been moved to my own code hosting solution on smolnet.org:
+* [fractions](https://code.smolnet.org/micke/fractions)
